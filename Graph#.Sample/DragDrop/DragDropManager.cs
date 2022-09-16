@@ -2,6 +2,8 @@
 using Core.Pubsub.Events;
 using GraphSharp.Controls;
 using GraphSharp.Sample.Helpers;
+using GraphSharp.Sample.Model;
+using GraphSharp.Sample.PubSubEvents;
 using GraphSharp.Sample.ViewModel;
 using Prism.Events;
 using System;
@@ -26,6 +28,7 @@ namespace GraphSharp.Sample.DragDrop
         private ArrowShape arrowVisual;
         private FrameworkElement rootVisual;
 
+        private VertexControl StartVertexControl = null;
         public DragDropManagerUtilities()
         {
             PubSub.Aggregator.GetEvent<StartDrawArrow>().Subscribe(OnStartDrawArrowEvent,ThreadOption.UIThread);
@@ -86,11 +89,12 @@ namespace GraphSharp.Sample.DragDrop
 
         private void OnStartDrawArrowEvent(object sender)
         {
-
+            StartVertexControl = null;
             if (sender is VertexControl vertexControl)
             {
                 if (vertexControl.Parent is PocGraphLayout pocGraphLayout)
                 {
+                    StartVertexControl = vertexControl;
                     rootVisual = pocGraphLayout.Parent as FrameworkElement;
                     var transform = vertexControl.TransformToAncestor(rootVisual);
                     Point topLeft = transform.Transform(new Point(0, 0));
@@ -129,6 +133,23 @@ namespace GraphSharp.Sample.DragDrop
 
         private void OnStopDrawArrowEvent(object sender)
         {
+            if (sender is VertexControl vertexControl)
+            {
+                var vertexEnd = vertexControl.DataContext as PocVertex;
+                var vertexStart = StartVertexControl.DataContext as PocVertex;
+                var graph = rootVisual.DataContext as PocGraph;
+                    graph.AddEdge(new PocEdge(Guid.NewGuid().ToString(), vertexStart, vertexEnd));
+                //PubSub.Aggregator.GetEvent<CreateEdge>().Publish(
+                //      new CreateEventPayload
+                //      {
+
+                //      }
+                //    );
+            }
+            else
+            {
+
+            }
             arrowContainer.IsOpen = false;
             rootVisual.AllowDrop = allowDropCache;
         }

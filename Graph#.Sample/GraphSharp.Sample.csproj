@@ -185,6 +185,7 @@
     <Compile Include="NewFolder1\TestTag.cs" />
     <Compile Include="NewFolder1\TestTagViewModel.cs" />
     <Compile Include="NewFolder1\TestTagViewModelCollection.cs" />
+    <Compile Include="PubSubEvents\CreateEventPayload.cs" />
     <Compile Include="ViewModel\GraphLayoutCommand.cs" />
     <Compile Include="ViewModel\PocGraphLayout.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />

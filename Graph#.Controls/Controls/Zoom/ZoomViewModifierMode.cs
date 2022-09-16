@@ -3,6 +3,7 @@
     public enum ZoomViewModifierMode
     {
         None,
-        Pan
+        Pan,
+        DrawArrow
     }
 }

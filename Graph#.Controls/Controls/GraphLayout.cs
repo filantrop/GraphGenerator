@@ -49,6 +49,7 @@ namespace GraphSharp.Controls
         where TEdge : IEdge<TVertex>
         where TGraph : class, IBidirectionalGraph<TVertex, TEdge>
     {
+
         protected readonly Dictionary<TEdge, EdgeControl> EdgeControls = new Dictionary<TEdge, EdgeControl>();
         private readonly Queue<TEdge> _edgesAdded = new Queue<TEdge>();
         private readonly Queue<TEdge> _edgesRemoved = new Queue<TEdge>();

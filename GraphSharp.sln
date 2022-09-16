@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29215.179
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphSharp", "Graph#\GraphSharp.csproj", "{9C59C516-FCA0-4FCF-AE11-E20F0F1B1949}"
 EndProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{FCE85E
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{01ACA460-F001-46F0-86E2-5301792D4133}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,12 @@ Global
 		{8F34D487-2FAA-4B4B-9099-D027579A74E1}.DebugWithoutPlugins|Any CPU.Build.0 = DebugWithoutPlugins|Any CPU
 		{8F34D487-2FAA-4B4B-9099-D027579A74E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F34D487-2FAA-4B4B-9099-D027579A74E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01ACA460-F001-46F0-86E2-5301792D4133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01ACA460-F001-46F0-86E2-5301792D4133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01ACA460-F001-46F0-86E2-5301792D4133}.DebugWithoutPlugins|Any CPU.ActiveCfg = Debug|Any CPU
+		{01ACA460-F001-46F0-86E2-5301792D4133}.DebugWithoutPlugins|Any CPU.Build.0 = Debug|Any CPU
+		{01ACA460-F001-46F0-86E2-5301792D4133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01ACA460-F001-46F0-86E2-5301792D4133}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

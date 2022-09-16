@@ -3,7 +3,10 @@
                     xmlns:converters="clr-namespace:GraphSharp.Converters"
                     xmlns:controls="clr-namespace:GraphSharp.Controls"
                     xmlns:attachedBehaviours="clr-namespace:GraphSharp.AttachedBehaviours"
-                    xmlns:zoom="clr-namespace:GraphSharp.Controls.Zoom">
+                    xmlns:zoom="clr-namespace:GraphSharp.Controls.Zoom"
+                    xmlns:model="clr-namespace:GraphSharp.Sample.Model"
+                    
+                    >
 
     <converters:EdgeRouteToPathConverter x:Key="RouteToPathConverter" />
     <converters:PointArrayToString x:Key="PointsToStringConverter" />
@@ -301,7 +304,7 @@
             </MultiTrigger>
         </Style.Triggers>
     </Style>
-
+    
     <Style TargetType="{x:Type zoom:ZoomControl}">
         <Setter Property="Template">
             <Setter.Value>
@@ -313,6 +316,7 @@
                                 ClipToBounds="{TemplateBinding ClipToBounds}">
                             <zoom:ZoomContentPresenter x:Name="PART_Presenter" ClipToBounds="False" />
                         </Border>
+                        
                         <Border Padding="5" Margin="5"
                                 CornerRadius="5"
                                 Background="#88C0C0C0"

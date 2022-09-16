@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Core.Pubsub;
+using Core.Pubsub.Events;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -186,8 +188,13 @@ namespace GraphSharp.Controls.Zoom
 
         private void ZoomControlMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (ModifierMode != ZoomViewModifierMode.Pan)
+            
+            if (ModifierMode == ZoomViewModifierMode.None)
                 return;
+            else if (ModifierMode == ZoomViewModifierMode.DrawArrow)
+            {
+                PubSub.Aggregator.GetEvent<StopDrawingArrow>().Publish(e.Source);
+            }
 
             ModifierMode = ZoomViewModifierMode.None;
             PreviewMouseMove -= ZoomControlPreviewMouseMove;
@@ -196,8 +203,14 @@ namespace GraphSharp.Controls.Zoom
 
         private void ZoomControlPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (ModifierMode != ZoomViewModifierMode.Pan)
+            
+            if (ModifierMode == ZoomViewModifierMode.None)
                 return;
+            if (ModifierMode == ZoomViewModifierMode.DrawArrow)
+            {                   
+                PubSub.Aggregator.GetEvent<OnDrawingArrow>().Publish(e.Source);
+                return;
+            }
 
             var translate = _startTranslate + (e.GetPosition(this) - _mouseDownPos);
             TranslateX = translate.X;
@@ -217,9 +230,19 @@ namespace GraphSharp.Controls.Zoom
                     break;
                 case ModifierKeys.Control:
                     break;
-                case ModifierKeys.Shift:
+                case ModifierKeys.Alt:
                     ModifierMode = ZoomViewModifierMode.Pan;
                     break;
+
+                case ModifierKeys.Shift:
+                    if (e.Source is VertexControl vertexControl)
+                    {
+                        ModifierMode = ZoomViewModifierMode.DrawArrow;
+                        PubSub.Aggregator.GetEvent<StartDrawArrow>().Publish(vertexControl);
+
+                    }                    
+                    break;
+
                 case ModifierKeys.Windows:
                     break;
                 default:
@@ -373,7 +396,7 @@ namespace GraphSharp.Controls.Zoom
             if (_presenter == null || Mode != ZoomControlModes.Fill)
                 return;
 
-            var deltaZoom = Math.Min(ActualWidth/_presenter.ContentSize.Width, ActualHeight/_presenter.ContentSize.Height);
+            var deltaZoom = Math.Min(ActualWidth / _presenter.ContentSize.Width, ActualHeight / _presenter.ContentSize.Height);
             var initialTranslate = GetInitialTranslate();
             DoZoomAnimation(deltaZoom, initialTranslate.X * deltaZoom, initialTranslate.Y * deltaZoom);
         }

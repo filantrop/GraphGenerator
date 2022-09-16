@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows;
+using Core.Pubsub;
+using Core.Pubsub.Events;
 using GraphSharp.Algorithms.EdgeRouting;
 using GraphSharp.Algorithms.Highlight;
 using GraphSharp.Algorithms.Layout;
@@ -269,7 +271,11 @@ namespace GraphSharp.Controls
                     return;
 
                 if (args.IsPositiveTrigger)
+                {
                     HighlightAlgorithm.OnVertexHighlighting(vertex);
+                    PubSub.Aggregator.GetEvent<GraphObjectClicked>().Publish(vertex);
+
+                }
                 else
                     HighlightAlgorithm.OnVertexHighlightRemoving(vertex);
             }

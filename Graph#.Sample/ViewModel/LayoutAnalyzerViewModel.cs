@@ -1,8 +1,14 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using Core.Pubsub;
+using Core.Pubsub.Events;
+using GraphSharp.Controls;
+using GraphSharp.Sample.DragDrop;
 using GraphSharp.Sample.Model;
 using GraphSharp.Serialization;
 
@@ -16,8 +22,23 @@ namespace GraphSharp.Sample.ViewModel
 
         public ICommand SaveGraphsCommand { get; private set; }
 
+
+
         private GraphModel _selectedGraphModel;
         private GraphLayoutCommand _commands;
+
+        private PocVertex _selectedVertex;
+
+        public PocVertex SelectedVertex
+        {
+            get { return _selectedVertex; }
+            set
+            {
+                _selectedVertex = value;
+
+                NotifyChanged(nameof(SelectedVertex));
+            }
+        }
 
         public ObservableCollection<GraphModel> GraphModels { get; private set; }
 
@@ -45,8 +66,12 @@ namespace GraphSharp.Sample.ViewModel
 
         public GraphLayoutViewModel AnalyzedLayouts { get; private set; }
 
+        public DragDropManagerUtilities DragDropManagerUtilities { get; set; }
         public LayoutAnalyzerViewModel()
         {
+            InitSubscribers();
+
+            DragDropManagerUtilities = new DragDropManagerUtilities();
             AnalyzedLayouts = new GraphLayoutViewModel
             {
                 LayoutAlgorithmType = "EfficientSugiyama"
@@ -58,6 +83,24 @@ namespace GraphSharp.Sample.ViewModel
             SaveGraphsCommand = new RelayCommand(p => SaveGraphs(), p => GraphModels.Count > 0, "Save Graphs");
 
             CreateSampleGraphs();
+
+        }
+
+        public void InitSubscribers()
+        {
+            PubSub.Aggregator.GetEvent<GraphObjectClicked>().Subscribe(GraphObjectClickedEvent);
+            
+        }
+
+        
+
+        private void GraphObjectClickedEvent(object obj)
+        {
+            if (obj is PocVertex pocVertex)
+            {
+                SelectedVertex = pocVertex;
+            }
+
         }
 
         partial void CreateSampleGraphs();
@@ -70,10 +113,10 @@ namespace GraphSharp.Sample.ViewModel
         private void OpenGraphs()
         {
             var ofd = new OpenFileDialog
-                        {
-                            FileName = "FA.gml",
-                            CheckPathExists = true
-                        };
+            {
+                FileName = "FA.gml",
+                CheckPathExists = true
+            };
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 GraphInfo = ofd.FileName.Load<PocGraphInfo>();

@@ -20,7 +20,14 @@
 	<SolidColorBrush x:Key="SemiHighlightedOutEdgeBrush" Color="#FFD6A51C" />
 	
 	<DataTemplate DataType="{x:Type model:PocVertex}">
-		<TextBlock Text="{Binding Path=ID, Mode=OneWay, FallbackValue=VertexId}" FontSize="{Binding FontSize}" />
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+		    <TextBlock Grid.Row="0" Text="{Binding Path=ID, Mode=OneWay, FallbackValue=VertexId}" FontSize="{Binding FontSize}" />
+            <Label Grid.Row="1" Content="{Binding FontSize}"/>
+        </Grid>
     </DataTemplate>
 	
 	<!-- VERTEX CONTROL -->

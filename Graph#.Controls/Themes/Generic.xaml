@@ -116,8 +116,8 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="controls:GraphElementBehaviour.HighlightTrigger"
-                Value="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" />
+        <!--<Setter Property="controls:GraphElementBehaviour.HighlightTrigger"
+                Value="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" />-->
         <Setter Property="attachedBehaviours:DragBehaviour.IsDragEnabled"
                 Value="True" />
         <Setter Property="attachedBehaviours:DragBehaviour.X"

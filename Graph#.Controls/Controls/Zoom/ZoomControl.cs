@@ -88,6 +88,20 @@ namespace GraphSharp.Controls.Zoom
             PreviewMouseDown += (sender, e) => OnMouseDown(e, true);
             MouseDown += (sender, e) => OnMouseDown(e, false);
             MouseUp += ZoomControlMouseUp;
+            MouseMove += OnMouseMove;
+
+        }
+
+        private void OnMouseMove(object sender, MouseEventArgs e)
+        {
+            var component = (Control)sender;
+            //MousePositionInfo($"Senderpos:{e.GetPosition((Control)sender)}\r\nTranslate: ");
+            MousePositionInfo($"Senderpos:{e.GetPosition((Control)e.Source)}\r\nTranslate: ");
+        }
+
+        private void MousePositionInfo(string info)
+        {
+            PubSub.Aggregator.GetEvent<MousePositionChanged>().Publish(info);
         }
 
         public double TranslateX
@@ -188,7 +202,7 @@ namespace GraphSharp.Controls.Zoom
 
         private void ZoomControlMouseUp(object sender, MouseButtonEventArgs e)
         {
-            
+
             if (ModifierMode == ZoomViewModifierMode.None)
                 return;
             else if (ModifierMode == ZoomViewModifierMode.DrawArrow)
@@ -203,11 +217,11 @@ namespace GraphSharp.Controls.Zoom
 
         private void ZoomControlPreviewMouseMove(object sender, MouseEventArgs e)
         {
-            
+
             if (ModifierMode == ZoomViewModifierMode.None)
                 return;
             if (ModifierMode == ZoomViewModifierMode.DrawArrow)
-            {                   
+            {
                 PubSub.Aggregator.GetEvent<OnDrawingArrow>().Publish(e.Source);
                 return;
             }
@@ -215,10 +229,13 @@ namespace GraphSharp.Controls.Zoom
             var translate = _startTranslate + (e.GetPosition(this) - _mouseDownPos);
             TranslateX = translate.X;
             TranslateY = translate.Y;
+
+            
         }
 
         private void OnMouseDown(MouseButtonEventArgs e, bool isPreview)
         {
+            MousePositionInfo($"Senderpos:{e.GetPosition((Control)e.Source)}\r\nTranslate: ");
             if (ModifierMode != ZoomViewModifierMode.None)
                 return;
 
@@ -229,6 +246,21 @@ namespace GraphSharp.Controls.Zoom
                         ModifierMode = ZoomViewModifierMode.Pan;
                     break;
                 case ModifierKeys.Control:
+                    if (isPreview) break;
+
+                        var translate = (e.GetPosition(this) - _mouseDownPos);
+                    var position = e.GetPosition(this);
+                    var x = position.X / Zoom;
+                    var y = position.Y / Zoom;
+
+                    //var originalPoint = this.GetInitialTranslate
+                    //var layout = (PocGraphLayout)this.Content;
+                    PubSub.Aggregator.GetEvent<CreateNode>().Publish(
+                            new CreateNodeBody
+                            {
+                                Content = this.Content,
+                                Point = new Point(x,y)//Mouse.GetPosition(this)
+                            });
                     break;
                 case ModifierKeys.Alt:
                     ModifierMode = ZoomViewModifierMode.Pan;
@@ -240,7 +272,7 @@ namespace GraphSharp.Controls.Zoom
                         ModifierMode = ZoomViewModifierMode.DrawArrow;
                         PubSub.Aggregator.GetEvent<StartDrawArrow>().Publish(vertexControl);
 
-                    }                    
+                    }
                     break;
 
                 case ModifierKeys.Windows:
@@ -256,7 +288,12 @@ namespace GraphSharp.Controls.Zoom
             _startTranslate = new Vector(TranslateX, TranslateY);
             Mouse.Capture(this);
             PreviewMouseMove += ZoomControlPreviewMouseMove;
+
+
         }
+
+
+
 
         private static void TranslateXPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

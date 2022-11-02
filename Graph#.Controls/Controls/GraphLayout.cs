@@ -112,7 +112,8 @@ namespace GraphSharp.Controls
 
         public override void ContinueLayout()
         {
-            Layout(true);
+            //Layout(true);
+            Layout(false);
         }
 
         public override void Relayout()

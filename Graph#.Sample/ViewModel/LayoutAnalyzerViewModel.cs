@@ -11,6 +11,7 @@ using GraphSharp.Controls;
 using GraphSharp.Sample.DragDrop;
 using GraphSharp.Sample.Model;
 using GraphSharp.Serialization;
+using Prism.Events;
 
 namespace GraphSharp.Sample.ViewModel
 {
@@ -39,6 +40,19 @@ namespace GraphSharp.Sample.ViewModel
                 NotifyChanged(nameof(SelectedVertex));
             }
         }
+
+        private string positionInfo;
+
+        public string PositionInfo
+        {
+            get { return positionInfo; }
+            set
+            {
+                positionInfo = value;
+                NotifyChanged(nameof(PositionInfo));
+            }
+        }
+
 
         public ObservableCollection<GraphModel> GraphModels { get; private set; }
 
@@ -84,15 +98,39 @@ namespace GraphSharp.Sample.ViewModel
 
             CreateSampleGraphs();
 
+            PubSub.Aggregator.GetEvent<CreateNode>().Subscribe(OnCreateNode, ThreadOption.UIThread);
+            PubSub.Aggregator.GetEvent<MousePositionChanged>().Subscribe(OnMousePositionChanged, ThreadOption.UIThread);
+
+        }
+
+        private void OnMousePositionChanged(string info)
+        {
+            PositionInfo = info;
+        }
+
+        private void OnCreateNode(CreateNodeBody body)
+        {
+            if (!(body.Content is PocGraphLayout pocGraphLayout)) return;
+            if (pocGraphLayout.Graph == null) return;
+            var graph = pocGraphLayout.Graph;
+            var to = new PocVertex("Ny", 12);
+            to.Point = body.Point;
+            graph.AddVertex(to);
+            //var vertexControl = pocGraphLayout.GetVertexControl(to);
+
+            //GraphCanvas.SetX(vertexControl, body.Point.X);
+            //GraphCanvas.SetY(vertexControl, body.Point.Y);
+            //vertexControl.SetValue()
+
         }
 
         public void InitSubscribers()
         {
             PubSub.Aggregator.GetEvent<GraphObjectClicked>().Subscribe(GraphObjectClickedEvent);
-            
+
         }
 
-        
+
 
         private void GraphObjectClickedEvent(object obj)
         {

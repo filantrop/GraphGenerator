@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows;
+using Core.Interfaces;
 using QuickGraph;
 
 namespace GraphSharp.Controls
@@ -100,7 +101,7 @@ namespace GraphSharp.Controls
             Sizes = null;
         }
 
-        private void DoNotificationLayout()
+        private void DoNotificationLayout(bool continueLayout = false)
         {
             lock (_notificationSyncRoot)
             {
@@ -127,7 +128,11 @@ namespace GraphSharp.Controls
             {
                 Worker = null;
                 OnMutation();
-                ContinueLayout();
+
+                if (continueLayout)
+                {
+                    ContinueLayout();
+                }
                 if (HighlightAlgorithm != null)
                     HighlightAlgorithm.ResetHighlight();
             };
@@ -288,6 +293,15 @@ namespace GraphSharp.Controls
                     SetY(presenter, pos.Y);
                 }
             }
+            else if(Graph.ContainsVertex(vertex) && Graph.Degree(vertex) == 0)
+            {
+                if (vertex is ITVertex iTVertex) { 
+                    SetX(presenter, iTVertex.Point.X);
+                    SetY(presenter, iTVertex.Point.Y);
+                }
+            }
+
+
         }
 
         private void CompoundVertexControl_ExpandedOrCollapsed(object sender, RoutedEventArgs e)
@@ -344,5 +358,5 @@ namespace GraphSharp.Controls
             RunDestructionTransition(EdgeControls[edge], false);
             EdgeControls.Remove(edge);
         }
-	}
+    }
 }

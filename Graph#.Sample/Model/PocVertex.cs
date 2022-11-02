@@ -1,10 +1,12 @@
-﻿using System.Diagnostics;
+﻿using Core.Interfaces;
+using System.Diagnostics;
+using System.Windows;
 using System.Xml.Serialization;
 
 namespace GraphSharp.Sample.Model
 {
     [DebuggerDisplay("{ID}")]
-    public class PocVertex
+    public class PocVertex :ITVertex
     {
         public PocVertex()
         {
@@ -21,6 +23,9 @@ namespace GraphSharp.Sample.Model
 
         [XmlAttribute]
         public int FontSize { get; set; }
+
+        public Point Point { get; set; }
+       
 
         public override string ToString()
         {

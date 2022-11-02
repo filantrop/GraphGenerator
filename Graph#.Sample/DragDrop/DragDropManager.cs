@@ -1,6 +1,7 @@
 ﻿using Core.Pubsub;
 using Core.Pubsub.Events;
 using GraphSharp.Controls;
+using GraphSharp.Controls.Zoom;
 using GraphSharp.Sample.Helpers;
 using GraphSharp.Sample.Model;
 using GraphSharp.Sample.PubSubEvents;
@@ -31,16 +32,9 @@ namespace GraphSharp.Sample.DragDrop
         private VertexControl StartVertexControl = null;
         public DragDropManagerUtilities()
         {
-            PubSub.Aggregator.GetEvent<StartDrawArrow>().Subscribe(OnStartDrawArrowEvent,ThreadOption.UIThread);
+            PubSub.Aggregator.GetEvent<StartDrawArrow>().Subscribe(OnStartDrawArrowEvent, ThreadOption.UIThread);
             PubSub.Aggregator.GetEvent<OnDrawingArrow>().Subscribe(OnWindowDragOverArrowEvent, ThreadOption.UIThread);
             PubSub.Aggregator.GetEvent<StopDrawingArrow>().Subscribe(OnStopDrawArrowEvent, ThreadOption.UIThread);
-
-
-            //DragDropManager.AddDragOverHandler(rootVisual, OnWindowDragOver, true);
-        }
-        public void SetupArrow(FrameworkElement _rootVisual)
-        {
-            rootVisual = _rootVisual;
             arrowVisual = new ArrowShape();
             arrowVisual.HeadHeight = 10;
             arrowVisual.HeadWidth = 10;
@@ -50,8 +44,16 @@ namespace GraphSharp.Sample.DragDrop
             arrowContainer = new Popup();
             arrowContainer.AllowsTransparency = true;
             arrowContainer.Placement = PlacementMode.Relative;
-            arrowContainer.PlacementTarget = rootVisual;
             arrowContainer.Child = arrowVisual;
+
+            //DragDropManager.AddDragOverHandler(rootVisual, OnWindowDragOver, true);
+        }
+
+
+        public void SetupArrow(FrameworkElement _rootVisual)
+        {
+            rootVisual = _rootVisual;            
+            arrowContainer.PlacementTarget = rootVisual;            
         }
 
 
@@ -100,10 +102,13 @@ namespace GraphSharp.Sample.DragDrop
                     Point topLeft = transform.Transform(new Point(0, 0));
                     //To get the right and bottom point of the element using height and width.
                     Point bottomRight = transform.Transform(new Point(vertexControl.ActualWidth, vertexControl.ActualHeight));
-                    
-                    var x = topLeft.X+ (bottomRight.X-topLeft.X)/2;
-                    var y = topLeft.Y+ (bottomRight.Y - topLeft.Y) / 2;
-                    SetupArrow(rootVisual);
+
+                    var x = topLeft.X + (bottomRight.X - topLeft.X) / 2;
+                    var y = topLeft.Y + (bottomRight.Y - topLeft.Y) / 2;
+                    //SetupArrow(rootVisual);
+                    arrowContainer.Visibility = Visibility.Visible;
+                    arrowVisual.Visibility = Visibility.Visible;
+                    arrowContainer.PlacementTarget = rootVisual;
                     arrowContainer.Width = rootVisual.ActualWidth;
                     arrowContainer.Height = rootVisual.ActualHeight;
                     //var position = Mouse.GetPosition(rootVisual);
@@ -133,45 +138,71 @@ namespace GraphSharp.Sample.DragDrop
 
         private void OnStopDrawArrowEvent(object sender)
         {
-            if (sender is VertexControl vertexControl)
-            {
-                var vertexEnd = vertexControl.DataContext as PocVertex;
-                var vertexStart = StartVertexControl.DataContext as PocVertex;
-                var graph = rootVisual.DataContext as PocGraph;
-                    graph.AddEdge(new PocEdge(Guid.NewGuid().ToString(), vertexStart, vertexEnd));
-                //PubSub.Aggregator.GetEvent<CreateEdge>().Publish(
-                //      new CreateEventPayload
-                //      {
-
-                //      }
-                //    );
-            }
-            else
-            {
-
-            }
             arrowContainer.IsOpen = false;
+            arrowContainer.Visibility = Visibility.Collapsed;
+            arrowVisual.Visibility = Visibility.Collapsed;
+            //GraphElementBehaviour.SetHighlightTrigger(StartVertexControl, false);
+
+            if (!(sender is ZoomControl zoomControl)) return;
+            if (!(zoomControl.Content is PocGraphLayout pocGraphLayout)) return;
+            if (pocGraphLayout.Graph == null) return;
+
+            var position = Mouse.GetPosition(rootVisual) - EndPointOffset;
+            if (position == null) return;
+
+            var vertexControl = GetVertexAtPosition(position.X, position.Y);
+
+            if (vertexControl == null) return;
+
+            var vertexEnd = vertexControl.DataContext as PocVertex;
+            var vertexStart = StartVertexControl.DataContext as PocVertex;
+            var graph = pocGraphLayout.Graph;
+
+            graph.AddEdge(new PocEdge(Guid.NewGuid().ToString(), vertexStart, vertexEnd));
+
+
+            //PubSub.Aggregator.GetEvent<CreateEdge>().Publish(
+            //      new CreateEventPayload
+            //      {
+
+            //      }
+            //    );
+            //GraphElementBehaviour.SetHighlightTrigger(vertexControl, false);
+ 
+
+            //arrowContainer.PlacementTarget = null;
+
             rootVisual.AllowDrop = allowDropCache;
         }
 
         private void OnWindowDragOverArrowEvent(object sender)
         {
-            //if (e.AllowedEffects != DragDropEffects.None)
-            //{
-            
 
             var position = Mouse.GetPosition(rootVisual) - EndPointOffset;
-            arrowVisual.X2 = position.X;
-            arrowVisual.Y2 = position.Y;
-            arrowVisual.UpdateGeometry();
 
-            if (!arrowContainer.IsOpen &&
-                GetDistance(arrowVisual.X1, arrowVisual.Y1, arrowVisual.X2, arrowVisual.Y2) >= dragStartThreshold)
+            UpdateArrowVisualToEndPosition(position.X, position.Y);
+
+            var vertexControl = GetVertexAtPosition(position.X, position.Y);
+
+            if (vertexControl == null)
             {
-                arrowContainer.IsOpen = true;
-            }
+                if (HighligtedVertexControl != null)
+                {
+                    //GraphElementBehaviour.SetHighlightTrigger(HighligtedVertexControl, false);
+                    HighligtedVertexControl = null;
+                }
+                return;
 
-            var hit = VisualTreeHelper.HitTest(rootVisual, new Point(position.X, position.Y));
+            }
+            HighligtedVertexControl = vertexControl;
+            //GraphElementBehaviour.SetHighlightTrigger(HighligtedVertexControl, true);
+
+
+        }
+
+        public VertexControl GetVertexAtPosition(double x, double y)
+        {
+            var hit = VisualTreeHelper.HitTest(rootVisual, new Point(x, y));
 
             if (hit != null)
             {
@@ -180,28 +211,24 @@ namespace GraphSharp.Sample.DragDrop
 
                     var vertexControl = VisualTreeHelperExtended.FindVisualParent<VertexControl>(frameworkElement);
 
-                    if (vertexControl == null)
-                    {
-                        if (HighligtedVertexControl != null)
-                        {
-                            GraphElementBehaviour.SetHighlightTrigger(HighligtedVertexControl, false);
-                            HighligtedVertexControl = null;
-                        }
-                        return;
+                    return vertexControl;
 
-                    }
-                    HighligtedVertexControl = vertexControl;
-                    GraphElementBehaviour.SetHighlightTrigger(HighligtedVertexControl, true);
-                    //MouseEventArgs mouseEventArgs = new MouseEventArgs(Mouse.PrimaryDevice, 0);
-                    //mouseEventArgs.RoutedEvent = Mouse.MouseEnterEvent;
-                    //vertexControl.RaiseEvent(mouseEventArgs);
                 }
-
             }
-            //MouseEventArgs mouseEventArgs = new MouseEventArgs(Mouse.PrimaryDevice, 0);
-            //mouseEventArgs.RoutedEvent = Mouse.MouseMoveEvent;
-            //rootVisual.RaiseEvent(mouseEventArgs);
-            //}
+            return null;
+        }
+
+        public void UpdateArrowVisualToEndPosition(double x, double y)
+        {
+            arrowVisual.X2 = x;
+            arrowVisual.Y2 = y;
+            arrowVisual.UpdateGeometry();
+
+            if (!arrowContainer.IsOpen &&
+                GetDistance(arrowVisual.X1, arrowVisual.Y1, arrowVisual.X2, arrowVisual.Y2) >= dragStartThreshold)
+            {
+                arrowContainer.IsOpen = true;
+            }
         }
         private VertexControl HighligtedVertexControl = null;
 

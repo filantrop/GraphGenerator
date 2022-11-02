@@ -45,7 +45,7 @@
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
-		<Setter Property="controls:GraphElementBehaviour.HighlightTrigger" Value="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Self}}"/>
+		<!--<Setter Property="controls:GraphElementBehaviour.HighlightTrigger" Value="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Self}}"/>-->
 		<Setter Property="newFolder1:DragChildrenBehaviour.IsDragEnabled" Value="True"/>
 		<Setter Property="newFolder1:DragChildrenBehaviour.X" Value="{Binding Path=(controls:GraphCanvas.X), Mode=TwoWay, RelativeSource={RelativeSource Self}}"/>
 		<Setter Property="newFolder1:DragChildrenBehaviour.Y" Value="{Binding Path=(controls:GraphCanvas.Y), Mode=TwoWay, RelativeSource={RelativeSource Self}}"/>
@@ -128,8 +128,8 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="controls:GraphElementBehaviour.HighlightTrigger"
-                Value="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" />
+        <!--<Setter Property="controls:GraphElementBehaviour.HighlightTrigger"
+                Value="{Binding RelativeSource={RelativeSource Self}, Path=IsMouseOver}" />-->
         <Setter Property="MinWidth"
                 Value="1" />
         <Setter Property="MinHeight"
@@ -201,8 +201,8 @@
             </Setter.Value>
         </Setter>
         
-        <Setter Property="controls:GraphElementBehaviour.HighlightTrigger"
-                Value="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" />
+        <!--<Setter Property="controls:GraphElementBehaviour.HighlightTrigger"
+                Value="{Binding RelativeSource={RelativeSource Self},Path=IsMouseOver}" />-->
         <Setter Property="newFolder1:DragChildrenBehaviour.IsDragEnabled"
                 Value="True" />
         <Setter Property="newFolder1:DragChildrenBehaviour.X"

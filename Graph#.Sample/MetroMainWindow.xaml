@@ -141,6 +141,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="150"/>
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -149,11 +150,12 @@
             <ColumnDefinition Width="75" />
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="0" Content="{Binding Path=SelectedVertex.ID,Mode=TwoWay}"/>
-        <ListBox Grid.Row="1" Grid.Column="0" Margin="5" ItemsSource="{Binding Path=GraphModels}"
+        <Label Grid.Row="1" Grid.Column="0" Content="{Binding Path=PositionInfo,Mode=TwoWay}"/>
+        <ListBox Grid.Row="2" Grid.Column="0" Margin="5" ItemsSource="{Binding Path=GraphModels}"
                  SelectedValue="{Binding Path=SelectedGraphModel, Mode=TwoWay}"
                  ItemTemplate="{DynamicResource GraphItemTemplate}" />
 
-        <zoom:ZoomControl Grid.RowSpan="2" Grid.ColumnSpan="3" Margin="190,0,10,0">
+        <zoom:ZoomControl Grid.RowSpan="3" Grid.ColumnSpan="3" Margin="190,0,10,0">
             <viewModel:PocGraphLayout x:Name="GraphLayout" Graph="{Binding AnalyzedLayouts.Graph}"
                                       Commands="{Binding Commands, Mode=TwoWay}"
                                       GraphInfo="{Binding GraphInfo, Mode=TwoWay}"

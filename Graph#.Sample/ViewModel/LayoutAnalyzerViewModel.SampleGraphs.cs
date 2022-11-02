@@ -7,6 +7,7 @@ namespace GraphSharp.Sample.ViewModel
 {
 	public partial class LayoutAnalyzerViewModel
 	{
+
 		partial void CreateSampleGraphs()
 		{
 			var graph = new PocGraph();
@@ -19,7 +20,8 @@ namespace GraphSharp.Sample.ViewModel
 		    SelectedGraphModel = GraphModels.First();
 		}
 
-	    private void Add(PocGraph graph, PocVertex from, TestTagViewModelCollection tags, int level, int fontsize)
+		//public PocGraph SelectedGraph { get; set; }
+		private void Add(PocGraph graph, PocVertex from, TestTagViewModelCollection tags, int level, int fontsize)
 	    {
 	        if (tags == null)
 			{

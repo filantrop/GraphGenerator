@@ -114,7 +114,9 @@ namespace GraphSharp.Sample.ViewModel
             if (pocGraphLayout.Graph == null) return;
             var graph = pocGraphLayout.Graph;
             var to = new PocVertex("Ny", 12);
-            to.Point = body.Point;
+            to.Point = Mouse.GetPosition(pocGraphLayout);
+
+            
             graph.AddVertex(to);
             //var vertexControl = pocGraphLayout.GetVertexControl(to);
 

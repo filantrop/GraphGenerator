@@ -94,9 +94,10 @@ namespace GraphSharp.Controls.Zoom
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
-            var component = (Control)sender;
+            //var component = ((ZoomControl)e.Source).Content;
             //MousePositionInfo($"Senderpos:{e.GetPosition((Control)sender)}\r\nTranslate: ");
-            MousePositionInfo($"Senderpos:{e.GetPosition((Control)e.Source)}\r\nTranslate: ");
+            var uiElement = (UIElement)this.Content;
+            //MousePositionInfo($"Senderpos:{e.GetPosition(uiElement)}\r\nTranslate: ");
         }
 
         private void MousePositionInfo(string info)
@@ -230,12 +231,27 @@ namespace GraphSharp.Controls.Zoom
             TranslateX = translate.X;
             TranslateY = translate.Y;
 
-            
+
         }
 
         private void OnMouseDown(MouseButtonEventArgs e, bool isPreview)
         {
-            MousePositionInfo($"Senderpos:{e.GetPosition((Control)e.Source)}\r\nTranslate: ");
+            var control = e.Source;
+            if (control is VertexControl vertexControl1)
+            {
+                var vertexPoint = vertexControl1.TransformToAncestor((UIElement)this.Content)
+                       .Transform(new Point(0, 0));
+                var x = vertexPoint.X;
+                var y = vertexPoint.Y;
+                MousePositionInfo($"VertexControl:\r\nx:{x}\r\ny:{y}");
+            }
+            else
+            {
+                var vertexPoint = Mouse.GetPosition((UIElement)this.Content); 
+                var x = vertexPoint.X;
+                var y = vertexPoint.Y;
+                MousePositionInfo($"GraphLayoutControl:\r\nx:{x}\r\ny:{y}");
+            }
             if (ModifierMode != ZoomViewModifierMode.None)
                 return;
 
@@ -248,7 +264,8 @@ namespace GraphSharp.Controls.Zoom
                 case ModifierKeys.Control:
                     if (isPreview) break;
 
-                        var translate = (e.GetPosition(this) - _mouseDownPos);
+                    var translate = (e.GetPosition(this) - _mouseDownPos);
+                    var uiElement = (UIElement)this.Content;
                     var position = e.GetPosition(this);
                     var x = position.X / Zoom;
                     var y = position.Y / Zoom;
@@ -259,7 +276,7 @@ namespace GraphSharp.Controls.Zoom
                             new CreateNodeBody
                             {
                                 Content = this.Content,
-                                Point = new Point(x,y)//Mouse.GetPosition(this)
+                                Point = new Point(x, y)//Mouse.GetPosition(this)
                             });
                     break;
                 case ModifierKeys.Alt:

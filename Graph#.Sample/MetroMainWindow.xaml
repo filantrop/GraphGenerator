@@ -157,6 +157,7 @@
 
         <zoom:ZoomControl Grid.RowSpan="3" Grid.ColumnSpan="3" Margin="190,0,10,0">
             <viewModel:PocGraphLayout x:Name="GraphLayout" Graph="{Binding AnalyzedLayouts.Graph}"
+                                          Background="AntiqueWhite"
                                       Commands="{Binding Commands, Mode=TwoWay}"
                                       GraphInfo="{Binding GraphInfo, Mode=TwoWay}"
                                       LayoutAlgorithmType="{Binding AnalyzedLayouts.LayoutAlgorithmType}"

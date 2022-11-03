@@ -1,4 +1,4 @@
-﻿using GraphSharp.Sample.Model;
+﻿using Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

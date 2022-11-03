@@ -1,4 +1,5 @@
-﻿using Core.Pubsub;
+﻿using Core.Models;
+using Core.Pubsub;
 using Core.Pubsub.Events;
 using GraphSharp.Controls;
 using GraphSharp.Controls.Zoom;

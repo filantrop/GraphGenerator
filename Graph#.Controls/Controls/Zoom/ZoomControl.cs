@@ -100,9 +100,9 @@ namespace GraphSharp.Controls.Zoom
             //MousePositionInfo($"Senderpos:{e.GetPosition(uiElement)}\r\nTranslate: ");
         }
 
-        private void MousePositionInfo(string info)
+        private void MousePositionInfo(string text, Point p)
         {
-            PubSub.Aggregator.GetEvent<MousePositionChanged>().Publish(info);
+            PubSub.Aggregator.GetEvent<MousePositionChanged>().Publish(new MousePositionChangedBody(text, p));
         }
 
         public double TranslateX
@@ -239,18 +239,27 @@ namespace GraphSharp.Controls.Zoom
             var control = e.Source;
             if (control is VertexControl vertexControl1)
             {
+                var graphlayout = (UIElement)this.Content;
                 var vertexPoint = vertexControl1.TransformToAncestor((UIElement)this.Content)
                        .Transform(new Point(0, 0));
                 var x = vertexPoint.X;
                 var y = vertexPoint.Y;
-                MousePositionInfo($"VertexControl:\r\nx:{x}\r\ny:{y}");
+                MousePositionInfo("Transformed VertexControl", vertexPoint);
+                MousePositionInfo("VertexControl",Mouse.GetPosition(graphlayout));
+
+                var presenterPos = Presenter.RenderTransform.Inverse.Transform(Mouse.GetPosition(this));
+                MousePositionInfo("1: Presenter on VertexControl click", presenterPos);
+                MousePositionInfo("2: Presenter on VertexControl click", Mouse.GetPosition(Presenter));
             }
             else
             {
-                var vertexPoint = Mouse.GetPosition((UIElement)this.Content); 
-                var x = vertexPoint.X;
-                var y = vertexPoint.Y;
-                MousePositionInfo($"GraphLayoutControl:\r\nx:{x}\r\ny:{y}");
+                if (Mouse.LeftButton == MouseButtonState.Pressed)
+                {
+                    var vertexPoint = Mouse.GetPosition((UIElement)Content);
+                    var x = vertexPoint.X;
+                    var y = vertexPoint.Y;
+                    MousePositionInfo(Content.GetType().Name, vertexPoint);
+                }
             }
             if (ModifierMode != ZoomViewModifierMode.None)
                 return;
@@ -267,16 +276,19 @@ namespace GraphSharp.Controls.Zoom
                     var translate = (e.GetPosition(this) - _mouseDownPos);
                     var uiElement = (UIElement)this.Content;
                     var position = e.GetPosition(this);
-                    var x = position.X / Zoom;
-                    var y = position.Y / Zoom;
-
+                    var presenterPos = Presenter.RenderTransform.Transform(Mouse.GetPosition(uiElement));
+                    var x = presenterPos.X ;
+                    var y = presenterPos.Y;
+                    //var width = uiElement.GetValue(WidthProperty);
+                   
                     //var originalPoint = this.GetInitialTranslate
                     //var layout = (PocGraphLayout)this.Content;
+                    MousePositionInfo(this.GetType().Name, presenterPos);
                     PubSub.Aggregator.GetEvent<CreateNode>().Publish(
                             new CreateNodeBody
                             {
                                 Content = this.Content,
-                                Point = new Point(x, y)//Mouse.GetPosition(this)
+                                Point = new Point(x,y)//Mouse.GetPosition(this)
                             });
                     break;
                 case ModifierKeys.Alt:

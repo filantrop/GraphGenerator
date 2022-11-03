@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using GraphSharp.Sample.Model;
+using Core.Models;
 
 namespace GraphSharp.Sample.ViewModel
 {

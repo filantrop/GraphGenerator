@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading;
 using System.Windows;
 using Core.Interfaces;
+using Core.Pubsub;
+using Core.Pubsub.Events;
 using QuickGraph;
 
 namespace GraphSharp.Controls
@@ -296,8 +298,15 @@ namespace GraphSharp.Controls
             else if(Graph.ContainsVertex(vertex) && Graph.Degree(vertex) == 0)
             {
                 if (vertex is ITVertex iTVertex) { 
+                    
                     SetX(presenter, iTVertex.Point.X);
                     SetY(presenter, iTVertex.Point.Y);
+                    var x = GetX(presenter);
+                    var y = GetY(presenter);
+
+                    PubSub.Aggregator.GetEvent<MousePositionChanged>().Publish(new MousePositionChangedBody("VertexControl position set", new Point(x,y)));
+
+
                 }
             }
 

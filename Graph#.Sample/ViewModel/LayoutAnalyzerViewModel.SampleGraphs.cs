@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
+using Core.Models;
 using GraphSharp.Sample.Model;
 using Scraper.ViewModel.Logs;
 
 namespace GraphSharp.Sample.ViewModel
 {
-	public partial class LayoutAnalyzerViewModel
+    public partial class LayoutAnalyzerViewModel
 	{
 
 		partial void CreateSampleGraphs()
